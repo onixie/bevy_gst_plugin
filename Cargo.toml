@@ -1,0 +1,11 @@
+[package]
+name = "bevy_gst_plugin"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.15.0"
+gstreamer = "0.23.3"
+gstreamer-app = "0.23.3"
+gstreamer-video = "0.23.3"
+image = "0.25.5"
