@@ -32,6 +32,7 @@
       glfw
 
       # for gstreamer
+      gcc14Stdenv.cc.cc.lib # workaround to avoid GLIBC version mismatch
       (with gst_all_1; [
         glib
         gstreamer        # Tools like "gst-inspect", "gst-launch", etc.
@@ -48,7 +49,7 @@
       type = "app";
       program = "${rust-toolchain}/bin/rust-analyzer";
     };
-    devShell = mkShell {
+    devShell = mkShell.override { stdenv = gcc14Stdenv; } {
       # dev dependencies
       inherit buildInputs;
       LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:${
