@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.15.0"
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main" } # TODO: use 0.16.0 once released.
 gstreamer = "0.23.3"
 gstreamer-app = "0.23.3"
 gstreamer-video = "0.23.3"
