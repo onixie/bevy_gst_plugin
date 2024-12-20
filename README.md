@@ -1,43 +1,50 @@
-# Yet another GStreamer plugin for Bevy game engine (under development)
+# Yet Another Bevy Plugin for GStreamer (Under Development)
 
-This project aims to provide a simple but general interface for Bevy to integrate with arbitrary GStreamer pipelines.
+This project aims to provide a simple but general interface for Bevy to integrate with GStreamer pipelines.
+
 
 ## Design Principles
-  * Simple and general API for both BEVY and GStreamer developers
-  * Good enough MVP with extensibility in mind
-  * Leverage existing libraries and avoid reinventing the wheel
-  * Minimum assumption and restriction to the user input
-  * Reasonable performance
+- Simple and general API for both Bevy and GStreamer developers.
+- Focus on creating a good-enough MVP while keeping extensibility in mind.
+- Leverage existing libraries to avoid reinventing the wheel.
+- Make minimal assumptions and impose few restrictions on user input.
+- Aim for reasonable performance.
+
 
 ## Features
-  * [Unstable] BEVY plugin to orchestrate initialization and setup
-  * [Unstable] GStreamer Pipeline as BEVY Component
-  * [Unstable] GStreamer AppSink as BEVY Component
-  * [TODO] GStreamer AppSrc as BEVY Component
-  * [WIP] Raw video/audio support
+- **[Unstable]** Bevy plugin for initialization and setup orchestration.
+- **[Unstable]** GStreamer Pipeline as a Bevy Component.
+- **[Unstable]** GStreamer AppSink as a Bevy Component.
+- **[TODO]** GStreamer AppSrc as a Bevy Component.
+- **[WIP]** Raw video and audio support.
 
-### Use cases
-  * Stream in BEVY
-    * Cut scenes
-    * In game displays, such as billboards and TVs in the background
-  * Stream out BEVY
-    * Recording gameplay
-    * Live streaming gameplay
-    * Multi-monitor, remote play, etc.
+
+## Use Cases
+- **Streaming into Bevy:**
+  - Cutscenes.
+  - In-game displays, such as billboards or background TVs.
+- **Streaming out of Bevy:**
+  - Recording gameplay.
+  - Live streaming, multi-monitor setups, remote play, and more.
+
 
 ## Examples
 
-``` shell
+Run the example:
+
+```shell
 cargo run --example simple-sink
 ```
 
+
 ## Development
 
-T.B.D
+This section is under development. Guidelines and contributions will be added soon.
+
 
 ## Credits
 
-Inspired by the following projects:
+This project was inspired by the following:
 
 - [bevy_gstreamer](https://github.com/foxzool/bevy_gstreamer)
 - [bevy_gst_video](https://github.com/schizobulia/bevy_gst_video)
