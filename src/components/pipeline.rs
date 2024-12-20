@@ -6,13 +6,15 @@ use gstreamer_app as gst_app;
 use std::marker::PhantomData;
 use std::ops::Deref;
 
+pub type GstPipeline = GstPipelineFor<()>;
+
 #[derive(Component)]
-pub struct GstPipeline<T = ()> {
+pub struct GstPipelineFor<T> {
     pipeline: gst::Pipeline,
     _phantom: PhantomData<T>,
 }
 
-impl<T> Deref for GstPipeline<T> {
+impl<T> Deref for GstPipelineFor<T> {
     type Target = gst::Pipeline;
 
     fn deref(&self) -> &Self::Target {
@@ -20,7 +22,7 @@ impl<T> Deref for GstPipeline<T> {
     }
 }
 
-impl<T> GstPipeline<T> {
+impl<T> GstPipelineFor<T> {
     pub fn new(pipeline_description: &str) -> Result<Self, error::Error> {
         gst::parse::launch(pipeline_description)
             .map_err(error::Error::Glib)
@@ -87,9 +89,9 @@ impl<T> GstPipeline<T> {
 fn test_create_gst_pipeline() -> Result<(), error::Error> {
     gst::init().unwrap();
 
-    GstPipeline::<()>::new("videotestsrc ! appsink")?;
-    GstPipeline::<()>::new("audiotestsrc ! appsink")?;
-    GstPipeline::<()>::new("appsrc ! appsink")?;
+    GstPipeline::new("videotestsrc ! appsink")?;
+    GstPipeline::new("audiotestsrc ! appsink")?;
+    GstPipeline::new("appsrc ! appsink")?;
     Ok(())
 }
 
@@ -97,6 +99,6 @@ fn test_create_gst_pipeline() -> Result<(), error::Error> {
 fn test_deref_gst_pipeline() -> Result<(), error::Error> {
     gst::init().unwrap();
 
-    &GstPipeline::<()>::new("videotestsrc ! appsink")? as &gst::Pipeline;
+    &GstPipeline::new("videotestsrc ! appsink")? as &gst::Pipeline;
     Ok(())
 }

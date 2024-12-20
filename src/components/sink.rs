@@ -1,13 +1,17 @@
-use crate::{error::Error, pipeline::GstPipeline, traits::*};
+pub mod raw_video;
+use crate::{error::Error, pipeline::GstPipelineFor, traits::*};
 use bevy::prelude::*;
 use gstreamer::{self as gst, prelude::*};
 use gstreamer_app as gst_app;
+pub use raw_video::*;
 use std::marker::PhantomData;
 use std::ops::Deref;
 use std::sync::{Arc, Mutex};
 
+pub type GstAppSink<S> = GstAppSinkFor<(), S>;
+
 #[derive(Component)]
-pub struct GstAppSink<S, T = ()>
+pub struct GstAppSinkFor<T, S>
 where
     S: Sample,
 {
@@ -16,7 +20,7 @@ where
     _phantom: PhantomData<T>,
 }
 
-impl<S: Sample, T> Deref for GstAppSink<S, T> {
+impl<T, S: Sample> Deref for GstAppSinkFor<T, S> {
     type Target = gst_app::AppSink;
 
     fn deref(&self) -> &Self::Target {
@@ -24,10 +28,10 @@ impl<S: Sample, T> Deref for GstAppSink<S, T> {
     }
 }
 
-impl<S: Sample, T> From<gst_app::AppSink> for GstAppSink<S, T> {
+impl<T, S: Sample> From<gst_app::AppSink> for GstAppSinkFor<T, S> {
     fn from(sink: gst_app::AppSink) -> Self {
         debug!("set sink caps");
-        sink.set_caps(S::supported_caps().as_ref());
+        sink.set_caps(Some(&S::supported_caps()));
 
         debug!("set sink callbacks");
         let sample = Arc::new(Mutex::new(None));
@@ -59,8 +63,8 @@ impl<S: Sample, T> From<gst_app::AppSink> for GstAppSink<S, T> {
     }
 }
 
-impl<S: Sample, T> GstAppSink<S, T> {
-    pub fn new(name: &str, pipeline: &GstPipeline<T>) -> Result<Self, Error> {
+impl<T, S: Sample> GstAppSinkFor<T, S> {
+    pub fn new(name: &str, pipeline: &GstPipelineFor<T>) -> Result<Self, Error> {
         let sink = pipeline
             .by_name(name)
             .and_downcast::<gst_app::AppSink>()
@@ -75,7 +79,7 @@ impl<S: Sample, T> GstAppSink<S, T> {
 fn test_create_gst_app_sink_for_video() -> Result<(), Error> {
     gst::init().unwrap();
 
-    let pipeline = GstPipeline::<()>::new(&format!(
+    let pipeline = GstPipeline::new(&format!(
         "videotestsrc ! appsink name={:?} caps={:?}",
         "appsink0", "video/x-raw"
     ))?;

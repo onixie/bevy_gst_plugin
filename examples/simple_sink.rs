@@ -5,16 +5,14 @@ use bevy::{
 };
 use bevy_gst_plugin::*;
 
-struct Example1;
-
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(LogPlugin {
             level: Level::DEBUG,
-            filter: "info,bevy_gst_plugin=debug".into(),
+            filter: "warn,bevy_gst_plugin=debug".into(),
             ..default()
         }))
-        .add_plugins(GstPlugin::<Example1>::new("videotestsrc ! appsink"))
+        .add_plugins(GstPlugin::new("videotestsrc ! appsink"))
         .add_systems(Startup, setup)
         .add_systems(Update, (update, control))
         .run();
@@ -27,7 +25,7 @@ fn setup(mut commands: Commands) {
         .with_child(ImageNode::default());
 }
 
-fn control(gst_pipeline: Query<&GstPipeline<Example1>>, keys: Res<ButtonInput<KeyCode>>) -> Result {
+fn control(gst_pipeline: Query<&GstPipeline>, keys: Res<ButtonInput<KeyCode>>) -> Result {
     let gst_pipeline = gst_pipeline.get_single()?;
     if keys.just_pressed(KeyCode::Space) {
         gst_pipeline.pause()?;
@@ -40,7 +38,7 @@ fn control(gst_pipeline: Query<&GstPipeline<Example1>>, keys: Res<ButtonInput<Ke
 
 fn update(
     mut image_node: Query<&mut ImageNode>,
-    video_sink: Query<&GstAppSink<RawVideo, Example1>>,
+    video_sink: Query<&GstAppSink<RawVideo>>,
     mut images: ResMut<Assets<Image>>,
 ) -> Result {
     let mut image_node = image_node.get_single_mut()?;

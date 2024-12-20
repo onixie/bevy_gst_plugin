@@ -2,17 +2,22 @@ use bevy::app::{App, Plugin, Startup};
 use bevy::ecs::result::Result;
 use bevy::prelude::*;
 use gstreamer as gst;
-use gstreamer_video as gst_video;
 use std::marker::PhantomData;
 
-use crate::{pipeline::GstPipeline, sink::GstAppSink, traits::*};
+use crate::{
+    pipeline::GstPipelineFor,
+    sink::{GstAppSinkFor, RawVideo},
+    traits::*,
+};
 
-pub struct GstPlugin<T = ()> {
+pub type GstPlugin = GstPluginFor<()>;
+
+pub struct GstPluginFor<T> {
     pub pipeline_description: &'static str,
     _phantom: PhantomData<T>,
 }
 
-impl<T> GstPlugin<T> {
+impl<T> GstPluginFor<T> {
     pub fn new(pipeline_description: &'static str) -> Self {
         Self {
             pipeline_description,
@@ -21,7 +26,7 @@ impl<T> GstPlugin<T> {
     }
 }
 
-impl<T> Plugin for GstPlugin<T>
+impl<T> Plugin for GstPluginFor<T>
 where
     T: Send + Sync + 'static,
 {
@@ -30,16 +35,12 @@ where
         let pipeline_description = self.pipeline_description.to_string();
 
         app.add_systems(Startup, move |mut commands: Commands| -> Result {
-            let pipeline = GstPipeline::<T>::new(&pipeline_description)?;
-            let video_sinks = pipeline.iterate_sinks_compatible_with(
-                gst_video::VideoCapsBuilder::new()
-                    .format(RawVideo::FORMAT)
-                    .build(),
-            );
+            let pipeline = GstPipelineFor::<T>::new(&pipeline_description)?;
+            let video_sinks = pipeline.iterate_sinks_compatible_with(RawVideo::supported_caps());
 
             commands.spawn(pipeline).with_children(|parent| {
                 for sink in video_sinks {
-                    parent.spawn(GstAppSink::<RawVideo, T>::from(sink));
+                    parent.spawn(GstAppSinkFor::<T, RawVideo>::from(sink));
                 }
             });
 
